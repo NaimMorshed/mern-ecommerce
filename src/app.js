@@ -3,6 +3,9 @@ const morgan = require("morgan");
 const createError = require("http-errors");
 const xssClean = require("xss-clean");
 const rateLimit = require("express-rate-limit");
+const userRouter = require("./routers/userRouter");
+const testRouter = require("./routers/testRouter");
+const seedRouter = require("./routers/seedRouter");
 
 const app = express();
 
@@ -13,34 +16,17 @@ const rateLimiter = rateLimit({
   message: "Too many request! Please try again later.",
 });
 
+// middleware
 app.use(morgan("dev"));
 app.use(rateLimiter);
 app.use(xssClean());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const isLoggedIn = (req, res, next) => {
-  const login = true;
-  if (login) {
-    req.body.id = 101;
-    next();
-  } else {
-    return res.status(401).json({ message: "Please login first" });
-  }
-};
-
-app.get("/test", (req, res) => {
-  res.status(200).send({
-    message: "api testing is working fine",
-  });
-});
-
-app.get("/api/users", isLoggedIn, (req, res) => {
-  console.log(req.body.id);
-  res.status(200).send({
-    message: "User profile is returned",
-  });
-});
+// routers
+app.use("/api/users", userRouter);
+app.use("/api/seed", seedRouter);
+app.use("/test", testRouter);
 
 // client error handling
 app.use((req, res, next) => {
