@@ -1,23 +1,16 @@
 const createError = require("http-errors");
+const User = require("../models/userModel");
 
-const getUser = (req, res, next) => {
+const getUsers = async (req, res, next) => {
   try {
+    const users = await User.find();
     res.status(200).send({
       message: "User is returned",
+      users,
     });
   } catch (error) {
     next(error);
   }
 };
 
-const getProfile = (req, res, next) => {
-  try {
-    res.status(200).send({
-      message: "User profile is returned",
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-module.exports = { getUser, getProfile };
+module.exports = { getUsers };
